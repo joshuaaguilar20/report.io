@@ -1,0 +1,959 @@
+{
+  "stats": {
+    "suites": 22,
+    "tests": 22,
+    "passes": 22,
+    "pending": 0,
+    "failures": 0,
+    "start": "2020-04-22T19:14:32.405Z",
+    "end": "2020-04-22T19:15:38.606Z",
+    "duration": 66201,
+    "testsRegistered": 22,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "15808d50-9501-452b-957e-a857ed512948",
+      "title": "",
+      "fullFile": "",
+      "file": "",
+      "beforeHooks": [
+        {
+          "title": "\"before all\" hook: Fetch and Publish",
+          "fullTitle": "\"before all\" hook: Fetch and Publish",
+          "timedOut": false,
+          "duration": 72,
+          "state": null,
+          "speed": null,
+          "pass": false,
+          "fail": false,
+          "pending": false,
+          "context": null,
+          "code": "requester = chai.request(`http://localhost:${config.app.port}`).keepOpen();\nrequire('../data/clickfeed-disposition-for-malicious-counts.mock'); //clickfeed-disposition-for-malicious-counts\n\ndescribe('clickfeed-disposition-for-malicious-counts', () => {\n  console.log(`#:1 `);\n  it(\"clickfeed-disposition-for-malicious-counts published to DB\", done => {\n    var count = 0;\n    requester.get(`/v1/stats/clickfeed-disposition-for-malicious-counts/2020-02-01/fetchandpublish`).then(res => {\n      //check to make sure response is not el stupido\n      if (res && res.body && res.body.id) {\n        function waitForProcess() {\n          requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n            if (res.body.status[0].status !== 'finished' && count < 5) {\n              //dont overload testing framework -- give some delay\n              count++;\n              setTimeout(waitForProcess, 1 * 1000);\n            } else {\n              //we finshed \n              const value = res.body.status[0].status === 'finished' ? true : false;\n              expect(value, 'Data NOT Been Stored').to.be.true;\n              done();\n            }\n          });\n        } // initiate wait process\n\n        waitForProcess();\n      }\n    });\n  });\n}), //basic health check\ndescribe('basic health check', () => {\n  it(\"can pass a basic health check\", done => {\n    requester.get('/v1/healthcheck-basic').end((err, res) => {\n      res.should.have.status(200);\n      res.body.should.be.a('object');\n      done();\n    });\n  });\n}); //advanced health check\ndescribe('advanced health-check', () => {\n  it(\"can pass a basic health check\", done => {\n    requester.get('/v1/healthcheck-basic').end((err, res) => {\n      res.should.have.status(200);\n      res.body.should.be.a('object');\n      done();\n    });\n  });\n}); //Document Creation hive_stats\ndescribe(' create a stats document', () => {\n  it(\" create stats document ID\", done => {\n    //use http to hit real app route.\n    requester.get('/v1/stats/hive_stats/2020-02-01/create').end((err, res) => {\n      res.should.have.status(200);\n      res.body.should.be.a('object');\n      res.body._id.should.be.a('string');\n      done();\n    });\n  });\n}), //Document Creation - Hive-attachments\ndescribe(' create a hive_attachments document', () => {\n  it(\"create hive attachments document\", done => {\n    requester.get('/v1/stats/hive_attachments/2020-02-01/create').end((err, res) => {\n      res.should.have.status(200);\n      res.body.should.be.a('object');\n      res.body._id.should.be.a('string');\n      done();\n    });\n  });\n}), //Document Creation urldetails\ndescribe('create a stats document', () => {\n  it(\"creates urldetails doucment\", done => {\n    requester.get('/v1/stats/urldetails/2020-02-01/create').end((err, res) => {\n      res.should.have.status(200);\n      res.body.should.be.a('object');\n      res.body._id.should.be.a('string');\n      done();\n    });\n  });\n}), //Document Creation  attachmentdetails\ndescribe('attachmentdetails document', () => {\n  it(\"create attachmentdetails document\", done => {\n    requester.get('/v1/stats/attachmentdetails/2020-02-01/create').end((err, res) => {\n      res.should.have.status(200);\n      res.body.should.be.a('object');\n      res.body._id.should.be.a('string');\n      done();\n    });\n  });\n}), //Document Creation  hive_urls\ndescribe('hive_urls', () => {\n  it(\"create hive_urls document\", done => {\n    requester.get('/v1/stats/hive_urls/2020-02-01/create').end((err, res) => {\n      res.should.have.status(200);\n      res.body.should.be.a('object');\n      res.body._id.should.be.a('string');\n      done();\n    });\n  });\n}), //Document Creation  hivedata\ndescribe('hivedata', () => {\n  it(\"create hivedata document\", done => {\n    requester.get('/v1/stats/hivedata/2020-02-01/create').end((err, res) => {\n      res.should.have.status(200);\n      res.body.should.be.a('object');\n      res.body._id.should.be.a('string');\n      done();\n    });\n  });\n});\ndescribe('urlfeed-source-count', () => {\n  require('../data/athena.mock');\n  it(\"urlfeed-source-count published to DB\", done => {\n    console.log(`#:2 `);\n    requester.get(`/v1/stats/urlfeed-source-counts/2020-02-01/fetchandpublish`).then(res => {\n      //check to make sure response is not el stupido\n      if (res && res.body && res.body.id) {\n        function waitForProcess() {\n          requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n            if (res.body.status[0].status !== 'finished') {\n              //dont overload testing framework -- give some delay\n              setTimeout(waitForProcess, 1 * 1000);\n            } else {\n              //we finshed \n              const value = res.body.status[0].status === 'finished' ? true : false;\n              expect(value, 'FAILED DATA NOT STORED').to.be.true;\n              done();\n            }\n          });\n        } // initiate wait process\n\n        waitForProcess();\n      }\n    });\n  });\n}), describe('clickfeed-disposition-counts', () => {\n  require('../data/clickfeed-disposition-counts.mock');\n  it(\"clickfeed-disposition-counts published to DB\", done => {\n    console.log(`#:3 `);\n    var count = 0;\n    requester.get(`/v1/stats/clickfeed-disposition-counts/2020-03-06/fetchandpublish`).then(res => {\n      //check to make sure response is not el stupido\n      if (res && res.body && res.body.id) {\n        function waitForProcess() {\n          requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n            if (res.body.status[0].status !== 'finished' && count < 5) {\n              //dont overload testing framework -- give some delay\n              count++;\n              setTimeout(waitForProcess, 1 * 1000);\n            } else {\n              //we finshed \n              const value = res.body.status[0].status === 'finished' ? true : false;\n              expect(value, 'Data Has Been Stored').to.be.true;\n              done();\n            }\n          });\n        } // initiate wait process\n\n        waitForProcess();\n      }\n    });\n  });\n}), describe('clickfeed-url-counts-for-errors', () => {\n  require('../data/clickfeed-url-counts-for-errors.mock');\n  it(\"clickfeed-url-counts-for-errors published to DB\", done => {\n    console.log(`#:4`);\n    var count = 0;\n    requester.get(`/v1/stats/clickfeed-url-counts-for-errors/2020-03-06/fetchandpublish`).then(res => {\n      //check to make sure response is not el stupido\n      if (res && res.body && res.body.id) {\n        function waitForProcess() {\n          requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n            if (res.body.status[0].status !== 'finished' && count < 5) {\n              //dont overload testing framework -- give some delay\n              count++;\n              setTimeout(waitForProcess, 1 * 1000);\n            } else {\n              //we finshed \n              const value = res.body.status[0].status === 'finished' ? true : false;\n              expect(value, 'Data Has Been Stored').to.be.true;\n              done();\n            }\n          });\n        } // initiate wait process\n\n        waitForProcess();\n      }\n    });\n  });\n}), describe('jmut-customer-stats', () => {\n  require('../data/jmut-customer-stats.mock');\n  it(\"jmut-customer-stats published to DB\", done => {\n    console.log(`#:5 `);\n    var count = 0;\n    requester.get(`/v1/stats/jmut-customer-stats/2020-03-06/fetchandpublish`).then(res => {\n      //check to make sure response is not el stupido\n      if (res && res.body && res.body.id) {\n        function waitForProcess() {\n          requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n            if (res.body.status[0].status !== 'finished' && count < 5) {\n              //dont overload testing framework -- give some delay\n              count++;\n              setTimeout(waitForProcess, 1 * 1000);\n            } else {\n              //we finshed \n              const value = res.body.status[0].status === 'finished' ? true : false;\n              expect(value, 'Data Has Been Stored').to.be.true;\n              done();\n            }\n          });\n        } // initiate wait process\n\n        waitForProcess();\n      }\n    });\n  });\n}), describe('jmut-delivered-vs-total-stats', () => {\n  require('../data/jmut-delivered-vs-total-stats.mock');\n  it(\"jmut-customer-stats published to DB\", done => {\n    console.log(`#:6`);\n    var count = 0;\n    requester.get(`/v1/stats/jmut-delivered-vs-total-stats/2020-03-24/fetchandpublish`).then(res => {\n      //check to make sure response is not el stupido\n      if (res && res.body && res.body.id) {\n        function waitForProcess() {\n          requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n            if (res.body.status[0].status !== 'finished' && count < 5) {\n              //dont overload testing framework -- give some delay\n              count++;\n              setTimeout(waitForProcess, 1 * 1000);\n            } else {\n              //we finshed \n              const value = res.body.status[0].status === 'finished' ? true : false;\n              expect(value, 'Data Has Been Stored').to.be.true;\n              done();\n            }\n          });\n        } // initiate wait process\n\n        waitForProcess();\n      }\n    });\n  });\n}), describe('jmut-source-vs-total-messages-stats 2020-03-24', () => {\n  require('../data/jmut-source-vs-total-messages-stats.mock');\n  it(\"jmut-customer-stats published to DB\", done => {\n    console.log(`#:7`);\n    var count = 0;\n    requester.get(`/v1/stats/jmut-source-vs-total-messages-stats/2020-03-24/fetchandpublish`).then(res => {\n      //check to make sure response is not el stupido\n      if (res && res.body && res.body.id) {\n        function waitForProcess() {\n          requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n            if (res.body.status[0].status !== 'finished') {\n              //dont overload testing framework -- give some delay\n              count++;\n              setTimeout(waitForProcess, 1 * 1000);\n            } else {\n              //we finshed \n              const value = res.body.status[0].status === 'finished' ? true : false;\n              expect(value, 'Data Has Been Stored').to.be.true;\n              done();\n            }\n          });\n        } // initiate wait process\n\n        waitForProcess();\n      }\n    }).catch(e => {\n      'query could not finish' + `${e}`;\n    });\n  });\n}), //11.jmat-extension-vs-attachment-stats:2020-03-24 \ndescribe('jmat-extension-vs-attachment-stats 2020-03-24', () => {\n  require('../data/jmat-extensions-vs-attachment-stats.mock');\n  it(\"jmat-extension-vs-attachment-stats published to DB\", done => {\n    requester.get(`/v1/stats/jmat-extension-vs-attachment-stats/2020-03-24/fetchandpublish`).then(res => {\n      //check to make sure response is not el stupido\n      if (res && res.body && res.body.id) {\n        function waitForProcess() {\n          requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n            if (res.body.status[0].status !== 'finished') {\n              //dont overload testing framework -- give some delay\n              setTimeout(waitForProcess, 1 * 1000);\n            } else {\n              //we finshed \n              const value = res.body.status[0].status === 'finished' ? true : false; //expect(value, 'Data Has Been NOT Stored').to.be.true;\n              //assert.fail(value, true, \"Data Has Been NOT Stored\");\n              done();\n            }\n          });\n        } // initiate wait process\n\n        waitForProcess();\n      }\n    }).catch(e => {\n      'query could not finish' + `${e}`;\n    });\n  });\n}), //FAILED ? \ndescribe('jmat-customer-stats 2020-03-24', () => {\n  require('../data/jmat-customer-stats.mock');\n  it(\"jmut-customer-stats published to DB\", done => {\n    var count = 0;\n    requester.get(`/v1/stats/jmat-customer-stats/2020-03-24/fetchandpublish`).then(res => {\n      //check to make sure response is not el stupido\n      if (res && res.body && res.body.id) {\n        function waitForProcess() {\n          requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n            if (res.body.status[0].status !== 'finished' && count < 8) {\n              //dont overload testing framework -- give some delay\n              count++;\n              setTimeout(waitForProcess, 2 * 1000);\n            } else {\n              //we finshed \n              console.log(res.body.value);\n              const value = res.body.status[0].status == 'finished' ? true : false; //expect(value, 'Data Has Been NOT Stored').to.be.true;\n              // assert.fail(value, true, \"Error message\");\n              done();\n            }\n          });\n        } // initiate wait process\n\n        waitForProcess();\n      }\n    }).catch(e => {\n      'query could not finish' + `${e}`;\n    });\n  });\n}), //13 \ndescribe(' jmat-delivered-vs-total-stats 2020-03-24', () => {\n  require('../data/jmat-delivered-vs-total-stats.mock'); //FAILED DP-40\n\n  it(\"jmut-customer-stats published to DB\", done => {\n    var count = 0;\n    requester.get(`/v1/stats/jmat-delivered-vs-total-stats/2020-03-24/fetchandpublish`).then(res => {\n      //check to make sure response is not el stupido\n      if (res && res.body && res.body.id) {\n        function waitForProcess() {\n          requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n            if (res.body.status[0].status !== 'finished') {\n              //dont overload testing framework -- give some delay\n              count++;\n              setTimeout(waitForProcess, 2 * 1000);\n            } else {\n              //we finshed \n              console.log(res.body.status);\n              const value = res.body.status[0].status === 'finished' ? true : false; //expect(value, 'Data Has Been NOT Stored').to.be.true;\n              //assert.fail(value, true, \"FAILED\");\n              done();\n            }\n          });\n        } // initiate wait process\n\n        waitForProcess();\n      }\n    }).catch(e => {\n      'query could not finish' + `${e}`;\n    });\n  });\n}), //14 FAILED 14. jmat-customer-attachment-delivered-vs-total-stats\ndescribe(' jmat-customer-attachment-delivered-vs-total-stats 2020-03-24', () => {\n  require('../data/jmat-customer-attachment-delivered-vs-total-stats.mock'); //FAILED DP-40\n\n  it(\"jmat-customer-attachment-delivered-vs-total-stats published to DB\", done => {\n    var count = 0;\n    requester.get(`/v1/stats/jmat-customer-attachment-delivered-vs-total-stats/2020-03-24/fetchandpublish`).then(res => {\n      //check to make sure response is not el stupido\n      if (res && res.body && res.body.id) {\n        function waitForProcess() {\n          requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n            if (res.body.status[0].status !== 'finished') {\n              //dont overload testing framework -- give some delay\n              count++;\n              setTimeout(waitForProcess, 1 * 1000);\n            } else {\n              //we finshed \n              const value = res.body.status[0].status === 'finished' ? true : false;\n              done();\n            }\n          });\n        } // initiate wait process\n\n        waitForProcess();\n      } else {\n        assert.fail(false, true, \"FAILED\");\n      }\n    }).catch(e => {\n      'query could not finish' + `${e}`;\n    });\n  });\n}); //15. FAILED: attachmentupload-mime-vs-count-and-size-stats - FAILED\ndescribe(' attachmentupload-mime-vs-count-and-size-stats 2020-03-24', () => {\n  require('../data/attachmentupload-mime-vs-count-and-size-stats.mock'); //FAILED DP-40\n\n  it(\"attachmentupload-mime-vs-count-and-size-stats published to DB\", done => {\n    var count = 0;\n    requester.get(`/v1/stats/attachmentupload-mime-vs-count-and-size-stats/2020-03-24/fetchandpublish`).then(res => {\n      //check to make sure response is not el stupido\n      if (res && res.body && res.body.id) {\n        function waitForProcess() {\n          requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n            if (res.body.status[0].status !== 'finished' && count < 4) {\n              //dont overload testing framework -- give some delay\n              count++;\n              setTimeout(waitForProcess, 2 * 1000);\n            } else {\n              //we finshed \n              const value = res.body.status[0].status == 'finished' ? true : false;\n              done();\n            }\n          });\n        } // initiate wait process\n\n        waitForProcess();\n      } else {\n        assert.fail(false, true, \"FAILED\");\n      }\n    }).catch(e => {\n      'query could not finish' + `${e}`;\n    });\n  });\n});",
+          "err": {},
+          "uuid": "ef9e1cda-2049-4318-ad57-acf2036691ce",
+          "parentUUID": "15808d50-9501-452b-957e-a857ed512948",
+          "isHook": true,
+          "skipped": false
+        }
+      ],
+      "afterHooks": [
+        {
+          "title": "\"after all\" hook",
+          "fullTitle": "\"after all\" hook",
+          "timedOut": false,
+          "duration": 0,
+          "state": null,
+          "speed": null,
+          "pass": false,
+          "fail": false,
+          "pending": false,
+          "context": null,
+          "code": "requester.close();",
+          "err": {},
+          "uuid": "2b4fc332-7e6f-43a6-8b75-d033a904bebe",
+          "parentUUID": "15808d50-9501-452b-957e-a857ed512948",
+          "isHook": true,
+          "skipped": false
+        }
+      ],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "18197671-9ec7-4a8d-b589-bff5b32533b3",
+          "title": "basic health check",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/health.spec.js",
+          "file": "/tests/v1/health.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "can pass a basic health check",
+              "fullTitle": "basic health check can pass a basic health check",
+              "timedOut": false,
+              "duration": 22,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "chai.request('http://localhost:5025').get('/v1/healthcheck-basic').end((err, res) => {\n  res.should.have.status(200);\n  res.body.should.be.a('object');\n  done();\n});",
+              "err": {},
+              "uuid": "635817b6-1524-47eb-87e2-e476720baaa8",
+              "parentUUID": "18197671-9ec7-4a8d-b589-bff5b32533b3",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "635817b6-1524-47eb-87e2-e476720baaa8"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 22,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "0b859210-4b7b-49f7-a486-a71fd7f2e8a0",
+          "title": "advanced health-check",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/health.spec.js",
+          "file": "/tests/v1/health.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "can pass a basic health check",
+              "fullTitle": "advanced health-check can pass a basic health check",
+              "timedOut": false,
+              "duration": 4,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "chai.request('http://localhost:5025').get('/v1/healthcheck-basic').end((err, res) => {\n  res.should.have.status(200);\n  res.body.should.be.a('object');\n  done();\n});",
+              "err": {},
+              "uuid": "e4b41e48-9f03-4118-9729-01d368eee74d",
+              "parentUUID": "0b859210-4b7b-49f7-a486-a71fd7f2e8a0",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "e4b41e48-9f03-4118-9729-01d368eee74d"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 4,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "e9ffb671-bdbb-47ab-b0fa-4187b39b8bfb",
+          "title": "clickfeed-disposition-for-malicious-counts",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/stats.spec.js",
+          "file": "/tests/v1/stats.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "clickfeed-disposition-for-malicious-counts published to DB",
+              "fullTitle": "clickfeed-disposition-for-malicious-counts clickfeed-disposition-for-malicious-counts published to DB",
+              "timedOut": false,
+              "duration": 5541,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "var count = 0;\nrequester.get(`/v1/stats/clickfeed-disposition-for-malicious-counts/2020-02-01/fetchandpublish`).then(res => {\n  //check to make sure response is not el stupido\n  if (res && res.body && res.body.id) {\n    function waitForProcess() {\n      requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n        if (res.body.status[0].status !== 'finished' && count < 5) {\n          //dont overload testing framework -- give some delay\n          count++;\n          setTimeout(waitForProcess, 1 * 1000);\n        } else {\n          //we finshed \n          const value = res.body.status[0].status === 'finished' ? true : false;\n          expect(value, 'Data NOT Been Stored').to.be.true;\n          done();\n        }\n      });\n    } // initiate wait process\n\n    waitForProcess();\n  }\n});",
+              "err": {},
+              "uuid": "658fe288-e0b2-48f9-b6a6-d1c9359d19d0",
+              "parentUUID": "e9ffb671-bdbb-47ab-b0fa-4187b39b8bfb",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "658fe288-e0b2-48f9-b6a6-d1c9359d19d0"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 5541,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "b52f73b3-6ada-472a-8e4e-0c39398d39a3",
+          "title": "basic health check",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/stats.spec.js",
+          "file": "/tests/v1/stats.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "can pass a basic health check",
+              "fullTitle": "basic health check can pass a basic health check",
+              "timedOut": false,
+              "duration": 3,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "requester.get('/v1/healthcheck-basic').end((err, res) => {\n  res.should.have.status(200);\n  res.body.should.be.a('object');\n  done();\n});",
+              "err": {},
+              "uuid": "aeaff988-2d1c-4625-9261-71d5cfa41952",
+              "parentUUID": "b52f73b3-6ada-472a-8e4e-0c39398d39a3",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "aeaff988-2d1c-4625-9261-71d5cfa41952"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 3,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "e7c5bf1e-25c6-4130-98f6-c551b9dc2c86",
+          "title": "advanced health-check",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/stats.spec.js",
+          "file": "/tests/v1/stats.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "can pass a basic health check",
+              "fullTitle": "advanced health-check can pass a basic health check",
+              "timedOut": false,
+              "duration": 2,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "requester.get('/v1/healthcheck-basic').end((err, res) => {\n  res.should.have.status(200);\n  res.body.should.be.a('object');\n  done();\n});",
+              "err": {},
+              "uuid": "161d7671-8714-4e8f-9b84-d508449d0519",
+              "parentUUID": "e7c5bf1e-25c6-4130-98f6-c551b9dc2c86",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "161d7671-8714-4e8f-9b84-d508449d0519"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 2,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "0df42dc3-7fb0-4140-a2e1-cc39b414a1bd",
+          "title": " create a stats document",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/stats.spec.js",
+          "file": "/tests/v1/stats.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": " create stats document ID",
+              "fullTitle": " create a stats document  create stats document ID",
+              "timedOut": false,
+              "duration": 5,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "//use http to hit real app route.\nrequester.get('/v1/stats/hive_stats/2020-02-01/create').end((err, res) => {\n  res.should.have.status(200);\n  res.body.should.be.a('object');\n  res.body._id.should.be.a('string');\n  done();\n});",
+              "err": {},
+              "uuid": "d6ec4d72-9811-4dc9-a92e-ed4db9b7ba81",
+              "parentUUID": "0df42dc3-7fb0-4140-a2e1-cc39b414a1bd",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "d6ec4d72-9811-4dc9-a92e-ed4db9b7ba81"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 5,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "bb70c279-294e-4700-a669-df1a571af2a8",
+          "title": " create a hive_attachments document",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/stats.spec.js",
+          "file": "/tests/v1/stats.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "create hive attachments document",
+              "fullTitle": " create a hive_attachments document create hive attachments document",
+              "timedOut": false,
+              "duration": 6,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "requester.get('/v1/stats/hive_attachments/2020-02-01/create').end((err, res) => {\n  res.should.have.status(200);\n  res.body.should.be.a('object');\n  res.body._id.should.be.a('string');\n  done();\n});",
+              "err": {},
+              "uuid": "63b5ef5a-4031-4a88-8126-bc8a68f5a9c1",
+              "parentUUID": "bb70c279-294e-4700-a669-df1a571af2a8",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "63b5ef5a-4031-4a88-8126-bc8a68f5a9c1"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 6,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "fbe14e7d-d714-4caa-b34c-ce6062d225bf",
+          "title": "create a stats document",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/stats.spec.js",
+          "file": "/tests/v1/stats.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "creates urldetails doucment",
+              "fullTitle": "create a stats document creates urldetails doucment",
+              "timedOut": false,
+              "duration": 7,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "requester.get('/v1/stats/urldetails/2020-02-01/create').end((err, res) => {\n  res.should.have.status(200);\n  res.body.should.be.a('object');\n  res.body._id.should.be.a('string');\n  done();\n});",
+              "err": {},
+              "uuid": "e66380bf-2486-464b-b5e8-b201046bd5f0",
+              "parentUUID": "fbe14e7d-d714-4caa-b34c-ce6062d225bf",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "e66380bf-2486-464b-b5e8-b201046bd5f0"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 7,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "8b478481-22c3-4a05-9d62-dc273868125b",
+          "title": "attachmentdetails document",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/stats.spec.js",
+          "file": "/tests/v1/stats.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "create attachmentdetails document",
+              "fullTitle": "attachmentdetails document create attachmentdetails document",
+              "timedOut": false,
+              "duration": 5,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "requester.get('/v1/stats/attachmentdetails/2020-02-01/create').end((err, res) => {\n  res.should.have.status(200);\n  res.body.should.be.a('object');\n  res.body._id.should.be.a('string');\n  done();\n});",
+              "err": {},
+              "uuid": "1ccc140e-986c-44a7-9ac0-c3ebfde7cfdf",
+              "parentUUID": "8b478481-22c3-4a05-9d62-dc273868125b",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "1ccc140e-986c-44a7-9ac0-c3ebfde7cfdf"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 5,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "b19212a6-49aa-4d9d-a2d2-13fa79824664",
+          "title": "hive_urls",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/stats.spec.js",
+          "file": "/tests/v1/stats.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "create hive_urls document",
+              "fullTitle": "hive_urls create hive_urls document",
+              "timedOut": false,
+              "duration": 5,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "requester.get('/v1/stats/hive_urls/2020-02-01/create').end((err, res) => {\n  res.should.have.status(200);\n  res.body.should.be.a('object');\n  res.body._id.should.be.a('string');\n  done();\n});",
+              "err": {},
+              "uuid": "0cf7aaf5-4957-4ca8-994c-75e985f828da",
+              "parentUUID": "b19212a6-49aa-4d9d-a2d2-13fa79824664",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "0cf7aaf5-4957-4ca8-994c-75e985f828da"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 5,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "3eb844f0-4f4a-42ce-832b-ccbb0242c8ba",
+          "title": "hivedata",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/stats.spec.js",
+          "file": "/tests/v1/stats.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "create hivedata document",
+              "fullTitle": "hivedata create hivedata document",
+              "timedOut": false,
+              "duration": 5,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "requester.get('/v1/stats/hivedata/2020-02-01/create').end((err, res) => {\n  res.should.have.status(200);\n  res.body.should.be.a('object');\n  res.body._id.should.be.a('string');\n  done();\n});",
+              "err": {},
+              "uuid": "9126bf8e-dffc-4238-a32b-795a6a620aa6",
+              "parentUUID": "3eb844f0-4f4a-42ce-832b-ccbb0242c8ba",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "9126bf8e-dffc-4238-a32b-795a6a620aa6"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 5,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "b84602e2-3e4a-40ee-9d42-64e99e2602dd",
+          "title": "urlfeed-source-count",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/stats.spec.js",
+          "file": "/tests/v1/stats.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "urlfeed-source-count published to DB",
+              "fullTitle": "urlfeed-source-count urlfeed-source-count published to DB",
+              "timedOut": false,
+              "duration": 5048,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "console.log(`#:2 `);\nrequester.get(`/v1/stats/urlfeed-source-counts/2020-02-01/fetchandpublish`).then(res => {\n  //check to make sure response is not el stupido\n  if (res && res.body && res.body.id) {\n    function waitForProcess() {\n      requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n        if (res.body.status[0].status !== 'finished') {\n          //dont overload testing framework -- give some delay\n          setTimeout(waitForProcess, 1 * 1000);\n        } else {\n          //we finshed \n          const value = res.body.status[0].status === 'finished' ? true : false;\n          expect(value, 'FAILED DATA NOT STORED').to.be.true;\n          done();\n        }\n      });\n    } // initiate wait process\n\n    waitForProcess();\n  }\n});",
+              "err": {},
+              "uuid": "e4e5e59a-81ef-4053-876d-4a08a50f58c5",
+              "parentUUID": "b84602e2-3e4a-40ee-9d42-64e99e2602dd",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "e4e5e59a-81ef-4053-876d-4a08a50f58c5"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 5048,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "c8a45308-4a30-4b7d-a4e2-31cce7f1743b",
+          "title": "clickfeed-disposition-counts",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/stats.spec.js",
+          "file": "/tests/v1/stats.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "clickfeed-disposition-counts published to DB",
+              "fullTitle": "clickfeed-disposition-counts clickfeed-disposition-counts published to DB",
+              "timedOut": false,
+              "duration": 5044,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "console.log(`#:3 `);\nvar count = 0;\nrequester.get(`/v1/stats/clickfeed-disposition-counts/2020-03-06/fetchandpublish`).then(res => {\n  //check to make sure response is not el stupido\n  if (res && res.body && res.body.id) {\n    function waitForProcess() {\n      requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n        if (res.body.status[0].status !== 'finished' && count < 5) {\n          //dont overload testing framework -- give some delay\n          count++;\n          setTimeout(waitForProcess, 1 * 1000);\n        } else {\n          //we finshed \n          const value = res.body.status[0].status === 'finished' ? true : false;\n          expect(value, 'Data Has Been Stored').to.be.true;\n          done();\n        }\n      });\n    } // initiate wait process\n\n    waitForProcess();\n  }\n});",
+              "err": {},
+              "uuid": "eb2fca02-49ee-41f1-b1f7-37728f90b896",
+              "parentUUID": "c8a45308-4a30-4b7d-a4e2-31cce7f1743b",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "eb2fca02-49ee-41f1-b1f7-37728f90b896"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 5044,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "5e0e1022-0002-4933-968b-870749529b68",
+          "title": "clickfeed-url-counts-for-errors",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/stats.spec.js",
+          "file": "/tests/v1/stats.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "clickfeed-url-counts-for-errors published to DB",
+              "fullTitle": "clickfeed-url-counts-for-errors clickfeed-url-counts-for-errors published to DB",
+              "timedOut": false,
+              "duration": 5043,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "console.log(`#:4`);\nvar count = 0;\nrequester.get(`/v1/stats/clickfeed-url-counts-for-errors/2020-03-06/fetchandpublish`).then(res => {\n  //check to make sure response is not el stupido\n  if (res && res.body && res.body.id) {\n    function waitForProcess() {\n      requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n        if (res.body.status[0].status !== 'finished' && count < 5) {\n          //dont overload testing framework -- give some delay\n          count++;\n          setTimeout(waitForProcess, 1 * 1000);\n        } else {\n          //we finshed \n          const value = res.body.status[0].status === 'finished' ? true : false;\n          expect(value, 'Data Has Been Stored').to.be.true;\n          done();\n        }\n      });\n    } // initiate wait process\n\n    waitForProcess();\n  }\n});",
+              "err": {},
+              "uuid": "58930bf5-5e82-4c12-bb79-698e50c5e2f0",
+              "parentUUID": "5e0e1022-0002-4933-968b-870749529b68",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "58930bf5-5e82-4c12-bb79-698e50c5e2f0"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 5043,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "4f48009e-e311-43f7-8a28-d8fdc151fa89",
+          "title": "jmut-customer-stats",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/stats.spec.js",
+          "file": "/tests/v1/stats.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "jmut-customer-stats published to DB",
+              "fullTitle": "jmut-customer-stats jmut-customer-stats published to DB",
+              "timedOut": false,
+              "duration": 5055,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "console.log(`#:5 `);\nvar count = 0;\nrequester.get(`/v1/stats/jmut-customer-stats/2020-03-06/fetchandpublish`).then(res => {\n  //check to make sure response is not el stupido\n  if (res && res.body && res.body.id) {\n    function waitForProcess() {\n      requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n        if (res.body.status[0].status !== 'finished' && count < 5) {\n          //dont overload testing framework -- give some delay\n          count++;\n          setTimeout(waitForProcess, 1 * 1000);\n        } else {\n          //we finshed \n          const value = res.body.status[0].status === 'finished' ? true : false;\n          expect(value, 'Data Has Been Stored').to.be.true;\n          done();\n        }\n      });\n    } // initiate wait process\n\n    waitForProcess();\n  }\n});",
+              "err": {},
+              "uuid": "e0d1c395-8fe6-448f-a084-a4e6b6a0557e",
+              "parentUUID": "4f48009e-e311-43f7-8a28-d8fdc151fa89",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "e0d1c395-8fe6-448f-a084-a4e6b6a0557e"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 5055,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "757faf6e-0f83-4248-b498-d7c161b17b4b",
+          "title": "jmut-delivered-vs-total-stats",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/stats.spec.js",
+          "file": "/tests/v1/stats.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "jmut-customer-stats published to DB",
+              "fullTitle": "jmut-delivered-vs-total-stats jmut-customer-stats published to DB",
+              "timedOut": false,
+              "duration": 5044,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "console.log(`#:6`);\nvar count = 0;\nrequester.get(`/v1/stats/jmut-delivered-vs-total-stats/2020-03-24/fetchandpublish`).then(res => {\n  //check to make sure response is not el stupido\n  if (res && res.body && res.body.id) {\n    function waitForProcess() {\n      requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n        if (res.body.status[0].status !== 'finished' && count < 5) {\n          //dont overload testing framework -- give some delay\n          count++;\n          setTimeout(waitForProcess, 1 * 1000);\n        } else {\n          //we finshed \n          const value = res.body.status[0].status === 'finished' ? true : false;\n          expect(value, 'Data Has Been Stored').to.be.true;\n          done();\n        }\n      });\n    } // initiate wait process\n\n    waitForProcess();\n  }\n});",
+              "err": {},
+              "uuid": "8249c527-af56-4c7e-aaf7-979fef7bd58a",
+              "parentUUID": "757faf6e-0f83-4248-b498-d7c161b17b4b",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "8249c527-af56-4c7e-aaf7-979fef7bd58a"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 5044,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "d4c5199f-fe1b-409a-b2b1-339760fcc6f1",
+          "title": "jmut-source-vs-total-messages-stats 2020-03-24",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/stats.spec.js",
+          "file": "/tests/v1/stats.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "jmut-customer-stats published to DB",
+              "fullTitle": "jmut-source-vs-total-messages-stats 2020-03-24 jmut-customer-stats published to DB",
+              "timedOut": false,
+              "duration": 5041,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "console.log(`#:7`);\nvar count = 0;\nrequester.get(`/v1/stats/jmut-source-vs-total-messages-stats/2020-03-24/fetchandpublish`).then(res => {\n  //check to make sure response is not el stupido\n  if (res && res.body && res.body.id) {\n    function waitForProcess() {\n      requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n        if (res.body.status[0].status !== 'finished') {\n          //dont overload testing framework -- give some delay\n          count++;\n          setTimeout(waitForProcess, 1 * 1000);\n        } else {\n          //we finshed \n          const value = res.body.status[0].status === 'finished' ? true : false;\n          expect(value, 'Data Has Been Stored').to.be.true;\n          done();\n        }\n      });\n    } // initiate wait process\n\n    waitForProcess();\n  }\n}).catch(e => {\n  'query could not finish' + `${e}`;\n});",
+              "err": {},
+              "uuid": "93709d5d-3209-4de3-a34a-b362c4dfad69",
+              "parentUUID": "d4c5199f-fe1b-409a-b2b1-339760fcc6f1",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "93709d5d-3209-4de3-a34a-b362c4dfad69"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 5041,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "96999da9-9c77-4b17-ba54-c717bac1b3d4",
+          "title": "jmat-extension-vs-attachment-stats 2020-03-24",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/stats.spec.js",
+          "file": "/tests/v1/stats.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "jmat-extension-vs-attachment-stats published to DB",
+              "fullTitle": "jmat-extension-vs-attachment-stats 2020-03-24 jmat-extension-vs-attachment-stats published to DB",
+              "timedOut": false,
+              "duration": 5046,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "requester.get(`/v1/stats/jmat-extension-vs-attachment-stats/2020-03-24/fetchandpublish`).then(res => {\n  //check to make sure response is not el stupido\n  if (res && res.body && res.body.id) {\n    function waitForProcess() {\n      requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n        if (res.body.status[0].status !== 'finished') {\n          //dont overload testing framework -- give some delay\n          setTimeout(waitForProcess, 1 * 1000);\n        } else {\n          //we finshed \n          const value = res.body.status[0].status === 'finished' ? true : false; //expect(value, 'Data Has Been NOT Stored').to.be.true;\n          //assert.fail(value, true, \"Data Has Been NOT Stored\");\n          done();\n        }\n      });\n    } // initiate wait process\n\n    waitForProcess();\n  }\n}).catch(e => {\n  'query could not finish' + `${e}`;\n});",
+              "err": {},
+              "uuid": "949384d8-56e3-4568-a946-956bb0092400",
+              "parentUUID": "96999da9-9c77-4b17-ba54-c717bac1b3d4",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "949384d8-56e3-4568-a946-956bb0092400"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 5046,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "f8e4e41e-64d9-427c-ae11-00acb227cd48",
+          "title": "jmat-customer-stats 2020-03-24",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/stats.spec.js",
+          "file": "/tests/v1/stats.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "jmut-customer-stats published to DB",
+              "fullTitle": "jmat-customer-stats 2020-03-24 jmut-customer-stats published to DB",
+              "timedOut": false,
+              "duration": 6030,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "var count = 0;\nrequester.get(`/v1/stats/jmat-customer-stats/2020-03-24/fetchandpublish`).then(res => {\n  //check to make sure response is not el stupido\n  if (res && res.body && res.body.id) {\n    function waitForProcess() {\n      requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n        if (res.body.status[0].status !== 'finished' && count < 8) {\n          //dont overload testing framework -- give some delay\n          count++;\n          setTimeout(waitForProcess, 2 * 1000);\n        } else {\n          //we finshed \n          console.log(res.body.value);\n          const value = res.body.status[0].status == 'finished' ? true : false; //expect(value, 'Data Has Been NOT Stored').to.be.true;\n          // assert.fail(value, true, \"Error message\");\n          done();\n        }\n      });\n    } // initiate wait process\n\n    waitForProcess();\n  }\n}).catch(e => {\n  'query could not finish' + `${e}`;\n});",
+              "err": {},
+              "uuid": "e21ba8b1-a83d-4b58-9159-e89a2e81a858",
+              "parentUUID": "f8e4e41e-64d9-427c-ae11-00acb227cd48",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "e21ba8b1-a83d-4b58-9159-e89a2e81a858"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 6030,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "c016a775-ed5f-46e6-8094-30ddacfe30a2",
+          "title": " jmat-delivered-vs-total-stats 2020-03-24",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/stats.spec.js",
+          "file": "/tests/v1/stats.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "jmut-customer-stats published to DB",
+              "fullTitle": " jmat-delivered-vs-total-stats 2020-03-24 jmut-customer-stats published to DB",
+              "timedOut": false,
+              "duration": 6033,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "var count = 0;\nrequester.get(`/v1/stats/jmat-delivered-vs-total-stats/2020-03-24/fetchandpublish`).then(res => {\n  //check to make sure response is not el stupido\n  if (res && res.body && res.body.id) {\n    function waitForProcess() {\n      requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n        if (res.body.status[0].status !== 'finished') {\n          //dont overload testing framework -- give some delay\n          count++;\n          setTimeout(waitForProcess, 2 * 1000);\n        } else {\n          //we finshed \n          console.log(res.body.status);\n          const value = res.body.status[0].status === 'finished' ? true : false; //expect(value, 'Data Has Been NOT Stored').to.be.true;\n          //assert.fail(value, true, \"FAILED\");\n          done();\n        }\n      });\n    } // initiate wait process\n\n    waitForProcess();\n  }\n}).catch(e => {\n  'query could not finish' + `${e}`;\n});",
+              "err": {},
+              "uuid": "c3471f24-c00d-4b0b-9c3d-b4f88ace3aba",
+              "parentUUID": "c016a775-ed5f-46e6-8094-30ddacfe30a2",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "c3471f24-c00d-4b0b-9c3d-b4f88ace3aba"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 6033,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "852d5a67-5d3c-4fbe-b669-669597023618",
+          "title": " jmat-customer-attachment-delivered-vs-total-stats 2020-03-24",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/stats.spec.js",
+          "file": "/tests/v1/stats.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "jmat-customer-attachment-delivered-vs-total-stats published to DB",
+              "fullTitle": " jmat-customer-attachment-delivered-vs-total-stats 2020-03-24 jmat-customer-attachment-delivered-vs-total-stats published to DB",
+              "timedOut": false,
+              "duration": 5044,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "var count = 0;\nrequester.get(`/v1/stats/jmat-customer-attachment-delivered-vs-total-stats/2020-03-24/fetchandpublish`).then(res => {\n  //check to make sure response is not el stupido\n  if (res && res.body && res.body.id) {\n    function waitForProcess() {\n      requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n        if (res.body.status[0].status !== 'finished') {\n          //dont overload testing framework -- give some delay\n          count++;\n          setTimeout(waitForProcess, 1 * 1000);\n        } else {\n          //we finshed \n          const value = res.body.status[0].status === 'finished' ? true : false;\n          done();\n        }\n      });\n    } // initiate wait process\n\n    waitForProcess();\n  } else {\n    assert.fail(false, true, \"FAILED\");\n  }\n}).catch(e => {\n  'query could not finish' + `${e}`;\n});",
+              "err": {},
+              "uuid": "48751314-18e1-4d8e-bc71-f74b40b9dffd",
+              "parentUUID": "852d5a67-5d3c-4fbe-b669-669597023618",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "48751314-18e1-4d8e-bc71-f74b40b9dffd"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 5044,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        },
+        {
+          "uuid": "6416a450-70fd-40d3-9c31-063900cb9d26",
+          "title": " attachmentupload-mime-vs-count-and-size-stats 2020-03-24",
+          "fullFile": "/Users/jaguilar/wProjects/tap-stats-director-api/tests/v1/stats.spec.js",
+          "file": "/tests/v1/stats.spec.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "attachmentupload-mime-vs-count-and-size-stats published to DB",
+              "fullTitle": " attachmentupload-mime-vs-count-and-size-stats 2020-03-24 attachmentupload-mime-vs-count-and-size-stats published to DB",
+              "timedOut": false,
+              "duration": 8064,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "var count = 0;\nrequester.get(`/v1/stats/attachmentupload-mime-vs-count-and-size-stats/2020-03-24/fetchandpublish`).then(res => {\n  //check to make sure response is not el stupido\n  if (res && res.body && res.body.id) {\n    function waitForProcess() {\n      requester.get(`/v1/process/${res.body.id}/status`).then(res => {\n        if (res.body.status[0].status !== 'finished' && count < 4) {\n          //dont overload testing framework -- give some delay\n          count++;\n          setTimeout(waitForProcess, 2 * 1000);\n        } else {\n          //we finshed \n          const value = res.body.status[0].status == 'finished' ? true : false;\n          done();\n        }\n      });\n    } // initiate wait process\n\n    waitForProcess();\n  } else {\n    assert.fail(false, true, \"FAILED\");\n  }\n}).catch(e => {\n  'query could not finish' + `${e}`;\n});",
+              "err": {},
+              "uuid": "671b5bb1-8c42-42a5-a1f7-ac5d59a43396",
+              "parentUUID": "6416a450-70fd-40d3-9c31-063900cb9d26",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "671b5bb1-8c42-42a5-a1f7-ac5d59a43396"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 8064,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 1500000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 1500000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.1.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "index",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "5.0.0"
+    },
+    "marge": {
+      "options": {
+        "reportFilename": "index"
+      },
+      "version": "4.1.0"
+    }
+  }
+}
